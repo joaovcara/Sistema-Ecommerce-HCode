@@ -1,7 +1,6 @@
 <?php 
 
 require_once("vendor/autoload.php");
-require_once("vendor/hcodebr/php-classes/src/DB/Sql.php");
 
 $app = new \Slim\Slim();
 
@@ -9,7 +8,7 @@ $app->config('debug', true);
 
 $app->get('/', function() {
     
-	$sql = new HCode\DB\Sql();
+	$sql = new Hcode\DB\Sql();
 
 	$results = $sql->select("SELECT * FROM tb_users");
 
