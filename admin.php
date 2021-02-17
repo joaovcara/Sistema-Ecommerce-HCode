@@ -218,7 +218,10 @@ $app->post("/admin/products/:idproduct", function($idproduct){
 
     $product->save();
 
-    $product->setPhoto($_FILES["file"]);
+    if(file_exists($_FILES['file']['tmp_name']) || is_uploaded_file($_FILES['file']['tmp_name'])){
+    
+        $product->setPhoto($_FILES["file"]);
+    }
 
     header("Location: /admin/products");
     exit;
