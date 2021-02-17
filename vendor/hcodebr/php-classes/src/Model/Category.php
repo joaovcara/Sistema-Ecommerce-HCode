@@ -5,6 +5,8 @@ namespace Hcode\Model;
 use \Hcode\DB\Sql;
 use \Hcode\Model;
 use \Hcode\Mailer;
+use \Hcode\Model\Category;
+use \Hcode\Model\Product;
 
 class Category extends Model{
 
@@ -66,6 +68,59 @@ class Category extends Model{
         }
 
         file_put_contents($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode('', $html));
+
+    }
+
+    public function getProducts($related = true){
+
+        $sql = new Sql();
+
+        if($related === true ){
+
+            return $sql->select("SELECT * FROM tb_products WHERE idproduct IN (
+                       SELECT pro.idproduct
+                         FROM tb_products pro 
+                   INNER JOIN tb_productscategories prc ON pro.idproduct = prc.idproduct
+                        WHERE prc.idcategory = :idcategory
+            );
+            ", [
+                ':idcategory'=>$this->getidcategory()
+            ]);
+        }else{
+
+            return $sql->select("SELECT * FROM tb_products WHERE idproduct NOT IN (
+                       SELECT pro.idproduct
+                         FROM tb_products pro 
+                   INNER JOIN tb_productscategories prc ON pro.idproduct = prc.idproduct
+                        WHERE prc.idcategory = :idcategory
+            );
+
+            ", [
+                ':idcategory'=>$this->getidcategory()
+            ]);
+        }
+
+    }
+
+    public function addProduct(Product $product){
+
+        $sql = new Sql();
+
+        $sql->query("INSERT INTO tb_productscategories (idcategory, idproduct) VALUES (:idcategory, :idproduct)", [
+            ':idcategory'=>$this->getidcategory(),
+            ':idproduct'=>$product->getidproduct()
+        ]);
+
+    }
+
+    public function removeProduct(Product $product){
+
+        $sql = new Sql();
+
+        $sql->query("DELETE FROM tb_productscategories WHERE idcategory = :idcategory AND idproduct = :idproduct", [
+            ':idcategory'=>$this->getidcategory(),
+            ':idproduct'=>$product->getidproduct()
+        ]);
 
     }
 
