@@ -6,6 +6,7 @@ use \Hcode\DB\Sql;
 use \Hcode\Model;
 use \Hcode\Mailer;
 use \Hcode\Model\User;
+use \Hcode\Model\Product;
 
 class Cart extends Model{
 
@@ -104,6 +105,57 @@ class Cart extends Model{
         ]);
 
         $this->setData($results[0]);
+
+    }
+
+    public  function addProduct(Product $product){
+
+        $sql = new Sql();
+
+        $sql->query("INSERT INTO tb_cartsproducts (idcart, idproduct) VALUES (:idcart, :idproduct)", [
+            ':idcart'=>$this->getidcart(),
+            ':idproduct'=>$product->getidproduct()
+        ]);
+
+    }
+
+    public  function removeProduct(Product $product, $all = false){
+
+        $sql = new Sql();
+
+        if($all){
+
+            $sql->query("UPDATE tb_cartsproducts SET dtremoved = NOW() WHERE idcart = :idcart AND idproduct = :idproduct AND dtremoved IS NULL", [
+                ':idcart'=>$this->getidcart(),
+                ':idproduct'=>$product->getidproduct()
+            ]);
+
+        }else{
+
+            $sql->query("UPDATE tb_cartsproducts SET dtremoved = NOW() WHERE idcart = :idcart AND idproduct = :idproduct AND dtremoved IS NULL LIMIT 1", [
+                ':idcart'=>$this->getidcart(),
+                ':idproduct'=>$product->getidproduct()
+            ]);        
+
+        }
+        
+    }
+
+    public function getProducts(){
+
+        $sql = new Sql();
+
+        $rows = $sql->select("SELECT pro.idproduct, pro.desproduct, pro.vlprice, pro.vlwidth, pro.vlheight, pro.vllength, pro.vlweight, pro.desurl, COUNT(*) AS qtd, SUM(pro.vlprice) AS total
+                                FROM tb_cartsproducts cpr 
+                          INNER JOIN tb_products pro ON cpr.idproduct = pro.idproduct 
+                               WHERE cpr.idcart = 5 AND cpr.dtremoved IS NULL
+                            GROUP BY pro.idproduct, pro.desproduct, pro.vlprice, pro.vlwidth, pro.vlheight, pro.vllength, pro.vlweight, pro.desurl
+                            ORDER BY pro.desproduct;
+        ", [
+            ':idcart'=>$this->getidcart()
+        ]);
+
+        return Product::checkList($rows);
 
     }
 
