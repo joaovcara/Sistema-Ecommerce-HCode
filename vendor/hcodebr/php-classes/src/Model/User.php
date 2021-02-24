@@ -83,7 +83,9 @@ class User extends Model{
 
         $sql = new Sql();
 
-        $results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
+        $results = $sql->select("SELECT * FROM tb_users usr 
+                            INNER JOIN tb_persons pes ON usr.idperson = pes.idperson 
+                            WHERE deslogin = :LOGIN", array(
             ":LOGIN"=>$Login
         ));
         
@@ -98,7 +100,7 @@ class User extends Model{
         if(password_verify($Password, $data["despassword"]) === true){
 
             $user = new User();
-
+            
             $data['desperson'] = utf8_encode($data['desperson']);
 
             $user->setData($data);
@@ -136,7 +138,7 @@ class User extends Model{
         $results = $sql->select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
             ":desperson"=>$this->getdesperson(),
             ":deslogin"=>utf8_decode($this->getdeslogin()),
-            "despassword"=>$this->getdespassword(),
+            "despassword"=>User::getPasswordHash($this->getdespassword()),
             "desemail"=>$this->getdesemail(),
             "nrphone"=>$this->getnrphone(),
             "inadmin"=>$this->getinadmin()
@@ -170,7 +172,7 @@ class User extends Model{
             ":iduser"=>$this->getiduser(),
             ":desperson"=>utf8_decode($this->getdesperson()),
             ":deslogin"=>$this->getdeslogin(),
-            "despassword"=>$this->getdespassword(),
+            "despassword"=>User::getPasswordHash($this->getdespassword()),
             "desemail"=>$this->getdesemail(),
             "nrphone"=>$this->getnrphone(),
             "inadmin"=>$this->getinadmin()
@@ -347,6 +349,14 @@ class User extends Model{
         ]);
 
         return(count($results) > 0);
+
+    }
+
+    public static function getPasswordHash($password){
+
+        return password_hash($password, PASSWORD_DEFAULT, [
+            'cost'=>12
+        ]);
 
     }
 
