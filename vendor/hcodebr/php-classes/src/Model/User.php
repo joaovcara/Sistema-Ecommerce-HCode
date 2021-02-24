@@ -105,7 +105,7 @@ class User extends Model{
             $data['desperson'] = utf8_encode($data['desperson']);
 
             $user->setData($data);
-
+            
             $_SESSION[User::SESSION] = $user->getValues();
 
             return $user;
