@@ -233,7 +233,7 @@ class Cart extends Model
                 'nCdEmpresa' => '',
                 'sDsSenha' => '',
                 'nCdServico' => '40010',
-                'sCepOrigem' => '17603865',
+                'sCepOrigem' => '17602045',
                 'sCepDestino' => $zipcode,
                 'nVlPeso' => $totals['peso'],
                 'nCdFormato' => '1',
@@ -249,7 +249,7 @@ class Cart extends Model
             $xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?" . $qs);
 
             $result = $xml->Servicos->cServico;
-
+            
             if ($result['msgErro'] != '') {
 
                 Cart::setMsgError($result->msgErro);
