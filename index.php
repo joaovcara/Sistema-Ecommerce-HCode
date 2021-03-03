@@ -14,6 +14,7 @@ require_once("site.php");
 require_once("user.php");
 require_once("admin.php");
 require_once("functions.php");
+require_once("admin-orders.php");
 
 $app->run();
 

@@ -45,4 +45,10 @@ function getCartPrice(){
 
 }
 
+function formatDate($data){
+
+    return date('d/m/Y', strtotime($data));
+
+}
+
 ?>
