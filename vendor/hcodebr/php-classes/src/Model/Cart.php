@@ -325,8 +325,6 @@ class Cart extends Model
         $this->setsubtotal($totals['total']);
         $this->settotal($totals['total'] + $this->getvlfreight());
 
-        return $totals;
-
     }
 
     public function removeSession()
